@@ -21,3 +21,20 @@ export type contextType = {
 	state: state;
 	dispatch: React.Dispatch<actions>;
 };
+
+export interface catDetail {
+	catName: string;
+	id: string;
+}
+
+export type catagorylist = catDetail[];
+export type catactions =
+	| { type: "create_cat"; payload: catDetail }
+	| { type: "edit_cat"; payload: catDetail }
+	| { type: "delete_cat"; payload: string };
+
+export type CatDispatch = React.Dispatch<catactions>;
+export type CatContextType = {
+	catState: catagorylist;
+	catDispatch: CatDispatch;
+};

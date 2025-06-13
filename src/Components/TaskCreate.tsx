@@ -6,8 +6,9 @@ import React, {
 	type SyntheticEvent,
 } from "react";
 import { v4 } from "uuid";
-import type { task } from "../types/TaskTypes";
-import TaskContext from "../state/context";
+import type { catDetail, task } from "../types/TaskTypes";
+import TaskContext, { CatContext } from "../state/context";
+import { catInitialState } from "../state/catagory";
 
 const TaskCreate: React.FC = (): ReactNode => {
 	let init: task = {
@@ -19,9 +20,22 @@ const TaskCreate: React.FC = (): ReactNode => {
 		priority: "Backlog",
 		description: "",
 	};
+
+	let catContext = useContext(CatContext);
+	let catList = () => {
+		if (catContext !== null) {
+			let { catState } = catContext;
+			return catState;
+		} else {
+			return catInitialState;
+		}
+	};
+	let initCat: catDetail = { catName: "", id: "" };
 	const context = useContext(TaskContext);
 	const [task, setTask] = useState<task>(init);
 	const [diag, setDiag] = useState<boolean>(false);
+	const [cat, setCat] = useState<boolean>(false);
+	const [catDetails, setcatDetails] = useState<catDetail>(initCat);
 	const diagHandler = () => {
 		setDiag((prv) => !prv);
 	};
@@ -71,14 +85,80 @@ const TaskCreate: React.FC = (): ReactNode => {
 	};
 
 	return (
-		<div className="w-full justify-end flex px-8 py-2">
+		<div className="w-full flex px-8 py-2">
 			{!diag && (
-				<button
-					onClick={diagHandler}
-					className="justify-self-end bg-teal-600 font-medium p-2 m-2 rounded-md text-white hover:cursor-pointer hover:bg-teal-900">
-					Add task
-				</button>
+				<div className="w-full justify-between flex px-8 py-2">
+					<div className="w-[50%]">
+						<p className="text-md font-semibold mx-2 p-2">
+							Choose Catagory
+							<select className="mx-2 focus: outline-none w-[30%]">
+								{catList().map((cat) => {
+									return (
+										<option key={cat.id} value={cat.id}>
+											{cat.catName}
+										</option>
+									);
+								})}
+							</select>
+						</p>
+					</div>
+					<div>
+						<button
+							onClick={() => {
+								setCat((prv) => {
+									return !prv;
+								});
+							}}
+							className="justify-self-end bg-teal-600 font-medium p-2 m-2 rounded-md text-white hover:cursor-pointer hover:bg-teal-900">
+							Add Catagory
+						</button>
+						<button
+							onClick={diagHandler}
+							className="justify-self-end bg-teal-600 font-medium p-2 m-2 rounded-md text-white hover:cursor-pointer hover:bg-teal-900">
+							Add task
+						</button>
+					</div>
+				</div>
 			)}
+			<dialog className="w-full " open={cat}>
+				<div className="w-[40%] rounded-md shadow-xl p-4 mx-auto">
+					<div className="w-full">
+						<p className="text-center text-teal-950 font-bold">Add Catagory</p>
+					</div>
+					<div className="w-full">
+						<form>
+							<input
+								required
+								className="w-full text-md font-medium py-1 my-2 text-teal-900 px-4 border-teal-900 border-b-2 focus:outline-none"
+								type="text"
+								name="catagory"
+								value={catDetails.catName}
+								onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+									setcatDetails((det) => {
+										return { ...det, catName: e.target.value };
+									});
+								}}
+								id="catagory"
+								placeholder="Create new Task Catagory"
+							/>
+						</form>
+					</div>
+					<div className="flex w-full justify-end">
+						<button
+							onClick={() => {
+								setCat((prv) => {
+									return !prv;
+								});
+							}}
+							className="bg-white mx-4 hover:bg-teal-100 font-semibold border-2 border-teal-500 p-2 rounded-md hover:cursor-pointer text-teal-950">
+							Cancel
+						</button>
+						<button className="bg-teal-500 hover:bg-teal-700 font-semibold p-2 rounded-md hover:cursor-pointer  text-white">
+							Create
+						</button>
+					</div>
+				</div>
+			</dialog>
 			<dialog className="bg-teal-50 w-[40%] mx-auto shadow-2xl" open={diag}>
 				<div>
 					<p className="font-medium text-teal-950 text-center">
