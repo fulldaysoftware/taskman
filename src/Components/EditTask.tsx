@@ -5,26 +5,20 @@ import React, {
 	type ReactNode,
 	type SyntheticEvent,
 } from "react";
-import { v4 } from "uuid";
+
 import type { task } from "../types/TaskTypes";
 import TaskContext from "../state/context";
+interface propstype {
+	editTask: task;
+	open: boolean;
+	func: () => void;
+}
 
-const TaskCreate: React.FC = (): ReactNode => {
-	let init: task = {
-		name: "",
-		end: "",
-		start: "",
-		isDone: false,
-		id: "",
-		priority: "Backlog",
-		description: "",
-	};
+const EditTask: React.FC<propstype> = (content: propstype): ReactNode => {
+	const { editTask, open, func } = content;
 	const context = useContext(TaskContext);
-	const [task, setTask] = useState<task>(init);
-	const [diag, setDiag] = useState<boolean>(false);
-	const diagHandler = () => {
-		setDiag((prv) => !prv);
-	};
+	const [task, setTask] = useState<task>({ ...editTask });
+
 	const fieldHandler = (
 		e:
 			| React.ChangeEvent<HTMLInputElement>
@@ -62,24 +56,16 @@ const TaskCreate: React.FC = (): ReactNode => {
 		}
 	};
 	const handleCreation = () => {
-		let newTask = { ...task, id: v4() };
 		if (context !== null) {
 			const { dispatch } = context;
-			dispatch({ type: "create_task", payload: newTask });
-			setTask(init);
+			dispatch({ type: "edit_task", payload: { ...task, isDone: false } });
+			func();
 		}
 	};
 
 	return (
-		<div className="w-full justify-end flex px-8 py-2">
-			{!diag && (
-				<button
-					onClick={diagHandler}
-					className="justify-self-end bg-teal-600 font-medium p-2 m-2 rounded-md text-white hover:cursor-pointer hover:bg-teal-900">
-					Add task
-				</button>
-			)}
-			<dialog className="bg-teal-50 w-[40%] mx-auto shadow-2xl" open={diag}>
+		<div className="w-full justify-end flex px-8">
+			<dialog className="bg-teal-50 w-[40%] mx-auto shadow-2xl" open={open}>
 				<div>
 					<p className="font-medium text-teal-950 text-center">
 						Create your Task
@@ -179,7 +165,7 @@ const TaskCreate: React.FC = (): ReactNode => {
 				</div>
 				<div className="w-full flex justify-end">
 					<button
-						onClick={diagHandler}
+						onClick={func}
 						className="bg-teal-50 border-2 font-medium p-2 m-2 rounded-md text-teal-950 hover:cursor-pointer hover:bg-teal-100">
 						Close
 					</button>
@@ -194,4 +180,4 @@ const TaskCreate: React.FC = (): ReactNode => {
 	);
 };
 
-export default TaskCreate;
+export default EditTask;
