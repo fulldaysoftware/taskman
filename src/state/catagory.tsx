@@ -1,6 +1,7 @@
 import type { catactions, catagorylist, catDetail } from "../types/TaskTypes";
 
 export const catInitialState: catagorylist = [
+	{ catName: "All Tasks", id: "all" },
 	{ catName: "Default", id: "1234567890" },
 ];
 

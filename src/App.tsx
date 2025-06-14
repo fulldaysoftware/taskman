@@ -8,6 +8,7 @@ import { getFromLocalStorage, saveToLocalStorage } from "./hooks/useReducer";
 import catagoryReducer, {
 	catInitialState,
 	getCatFromLocal,
+	saveCatToLocalStorage,
 } from "./state/catagory";
 
 function App() {
@@ -24,7 +25,10 @@ function App() {
 	useEffect(() => {
 		saveToLocalStorage(state);
 	}, [state]);
-	// const context = { state, dispatch };
+	useEffect(() => {
+		saveCatToLocalStorage(catState);
+	}, [catState]);
+
 	return (
 		<TaskContext.Provider value={{ state, dispatch }}>
 			<CatContext.Provider value={{ catState, catDispatch }}>

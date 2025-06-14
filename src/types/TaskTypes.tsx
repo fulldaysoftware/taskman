@@ -6,6 +6,7 @@ export interface task {
 	start: string;
 	end: string;
 	id: string;
+	groupId?: string;
 	priority: "Backlog" | "Low" | "Medium" | "High" | "Critical" | string;
 	isDone: boolean;
 }

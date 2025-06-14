@@ -1,5 +1,6 @@
 import React, {
 	useContext,
+	useRef,
 	useState,
 	type FormEvent,
 	type ReactNode,
@@ -11,20 +12,22 @@ import TaskContext, { CatContext } from "../state/context";
 import { catInitialState } from "../state/catagory";
 
 const TaskCreate: React.FC = (): ReactNode => {
+	const xcat = useRef(null);
+	let catContext2 = useContext(CatContext);
 	let init: task = {
 		name: "",
 		end: "",
 		start: "",
 		isDone: false,
 		id: "",
+		groupId: "123456789",
 		priority: "Backlog",
 		description: "",
 	};
 
-	let catContext = useContext(CatContext);
 	let catList = () => {
-		if (catContext !== null) {
-			let { catState } = catContext;
+		if (catContext2 !== null) {
+			let { catState } = catContext2;
 			return catState;
 		} else {
 			return catInitialState;
@@ -61,6 +64,12 @@ const TaskCreate: React.FC = (): ReactNode => {
 				return { ...prv, end: e.target.value };
 			});
 		}
+		if (name === "catId") {
+			console.log("Val", xcat.current);
+			setTask((prv) => {
+				return { ...prv, groupId: e.target.value };
+			});
+		}
 		if (name === "desc") {
 			setTask((prv) => {
 				return { ...prv, description: e.target.value };
@@ -83,36 +92,30 @@ const TaskCreate: React.FC = (): ReactNode => {
 			setTask(init);
 		}
 	};
+	let catContext = useContext(CatContext);
 	const handleTaskCat = () => {
+		let gid = () => {
+			if (xcat !== null) {
+				return xcat.current;
+			} else {
+				return "1234567890";
+			}
+		};
 		let newCat = { ...catDetails, id: v4() };
 		if (catContext !== null) {
 			const { catDispatch } = catContext;
 			catDispatch({ type: "create_cat", payload: newCat });
-			setcatDetails(initCat);
 			setCat((prv) => {
 				return !prv;
 			});
+			setcatDetails(initCat);
 		}
 	};
 
 	return (
 		<div className="w-full flex px-8 py-2">
 			{!diag && (
-				<div className="w-full justify-between flex px-8 py-2">
-					<div className="w-[50%]">
-						<p className="text-md font-semibold mx-2 p-2">
-							Choose Catagory
-							<select className="mx-2 focus: outline-none w-[30%]">
-								{catList().map((cat) => {
-									return (
-										<option key={cat.id} value={cat.id}>
-											{cat.catName}
-										</option>
-									);
-								})}
-							</select>
-						</p>
-					</div>
+				<div className="w-full justify-end flex px-8 py-2">
 					<div>
 						<button
 							onClick={() => {
@@ -253,6 +256,32 @@ const TaskCreate: React.FC = (): ReactNode => {
 										<option value={"Critical"}>Critical</option>
 									</select>
 								</div>
+							</div>
+							<div>
+								<p className="my-2">
+									<label className="text-teal-950 font-medium">
+										What is the catagory
+									</label>
+								</p>
+								<select
+									ref={xcat}
+									onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+										fieldHandler(e, "catId");
+									}}
+									className="w-full bg-teal-50 font-medium text-teal-950 border-b-1 focus:border-b-2 focus:outline-none">
+									{catList().map((cat) => {
+										if (cat.catName !== "All Tasks") {
+											return (
+												<option
+													selected={cat.catName === "Default" && true}
+													key={cat.id}
+													value={cat.id}>
+													{cat.catName}
+												</option>
+											);
+										}
+									})}
+								</select>
 							</div>
 							<div>
 								<textarea
