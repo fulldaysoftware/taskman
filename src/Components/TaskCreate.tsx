@@ -83,6 +83,17 @@ const TaskCreate: React.FC = (): ReactNode => {
 			setTask(init);
 		}
 	};
+	const handleTaskCat = () => {
+		let newCat = { ...catDetails, id: v4() };
+		if (catContext !== null) {
+			const { catDispatch } = catContext;
+			catDispatch({ type: "create_cat", payload: newCat });
+			setcatDetails(initCat);
+			setCat((prv) => {
+				return !prv;
+			});
+		}
+	};
 
 	return (
 		<div className="w-full flex px-8 py-2">
@@ -153,7 +164,9 @@ const TaskCreate: React.FC = (): ReactNode => {
 							className="bg-white mx-4 hover:bg-teal-100 font-semibold border-2 border-teal-500 p-2 rounded-md hover:cursor-pointer text-teal-950">
 							Cancel
 						</button>
-						<button className="bg-teal-500 hover:bg-teal-700 font-semibold p-2 rounded-md hover:cursor-pointer  text-white">
+						<button
+							onClick={handleTaskCat}
+							className="bg-teal-500 hover:bg-teal-700 font-semibold p-2 rounded-md hover:cursor-pointer  text-white">
 							Create
 						</button>
 					</div>
